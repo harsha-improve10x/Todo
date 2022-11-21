@@ -7,11 +7,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TaskListActivity extends AppCompatActivity {
-    public ArrayList<TaskList> taskLists;
+    public ArrayList<TaskList> taskLists = new ArrayList<>();
     public RecyclerView taskListRv;
     public TaskListAdapter taskListAdapter;
     Button addTaskBtn;
@@ -23,8 +29,8 @@ public class TaskListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Task List");
         addTaskBtn = findViewById(R.id.add_task_list_btn);
         setAddTaskBtn();
-        setTaskListsData();
         setTaskListRv();
+        fetchData();
     }
 
     public void setAddTaskBtn() {
@@ -38,31 +44,25 @@ public class TaskListActivity extends AppCompatActivity {
         taskListRv = findViewById(R.id.task_list_rv);
         taskListRv.setLayoutManager(new LinearLayoutManager(this));
         taskListAdapter = new TaskListAdapter();
-        taskListAdapter.setTasksLists(taskLists);
+        taskListAdapter.setData(taskLists);
         taskListRv.setAdapter(taskListAdapter);
     }
 
-    public void setTaskListsData() {
-        taskLists = new ArrayList<>();
+    public void fetchData() {
+        TodoApi todoApi = new TodoApi();
+        TodoService todoService = todoApi.createTodoService();
+        Call<List<TaskList>>call = todoService.fetchTasks();
+        call.enqueue(new Callback<List<TaskList>>() {
+            @Override
+            public void onResponse(Call<List<TaskList>> call, Response<List<TaskList>> response) {
+                List<TaskList> taskLists = response.body();
+                taskListAdapter.setData(taskLists);
+            }
 
-        TaskList getVegetables = new TaskList();
-        getVegetables.name = "Get vegetables";
-        getVegetables.description = "for 1 week";
-        taskLists.add(getVegetables);
-
-        TaskList readingNews = new TaskList();
-        readingNews.name = "Reading news";
-        readingNews.description = "Explore politics, filmy and sport news";
-        taskLists.add(readingNews);
-
-        TaskList prepareLunch = new TaskList();
-        prepareLunch.name = "Prepare Lunch";
-        prepareLunch.description = "Biryani and Raitha. yummyyyyy";
-        taskLists.add(prepareLunch);
-
-        TaskList haveBreakfast = new TaskList();
-        haveBreakfast.name = "Have Breakfast";
-        haveBreakfast.description = "Healthy breakfast for a better morning";
-        taskLists.add(haveBreakfast);
+            @Override
+            public void onFailure(Call<List<TaskList>> call, Throwable t) {
+                Toast.makeText(TaskListActivity.this, "Failed to load data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

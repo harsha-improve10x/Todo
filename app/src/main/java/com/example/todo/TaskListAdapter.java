@@ -7,13 +7,13 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListViewHolder> {
 
-    public ArrayList<TaskList> tasksLists;
+    public List<TaskList> tasksLists;
 
-    public void setTasksLists(ArrayList<TaskList> tasksLists1) {
+    public void setData(List<TaskList> tasksLists1) {
         tasksLists = tasksLists1;
         notifyDataSetChanged();
     }
