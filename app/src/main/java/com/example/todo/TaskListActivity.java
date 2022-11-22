@@ -33,6 +33,12 @@ public class TaskListActivity extends AppCompatActivity {
         fetchData();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchData();
+    }
+
     public void setAddTaskBtn() {
         addTaskBtn.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddTaskActivity.class);
